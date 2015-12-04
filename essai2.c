@@ -9,13 +9,14 @@
 int main(int argc, char* argv[]) {
   int n = 3;
   int k = 0;
+  int i, j;
   int* tube = (int*) malloc(2*n*sizeof(int));
 
-  for (int i = 0; i < 2*n; i = i+2) {
+  for (i = 0; i < 2*n; i = i+2) {
       pipe(&tube[i]);
   }
 
-  for (int i = 0; i < n; i++) {
+  for (i = 0; i < n; i++) {
       if (fork() == 0) {
           int in;
           if (i != 0)
@@ -24,7 +25,7 @@ int main(int argc, char* argv[]) {
               in = (2*(i))%(2*n);
           int out = (2*i) + 1;
           read(tube[in], &k, sizeof(int));
-          for (int j = 0; j < 2*n; j++) {
+          for (j = 0; j < 2*n; j++) {
               if (!(j == in || j == out)) {
                   close(tube[j]);
               }
@@ -38,7 +39,7 @@ int main(int argc, char* argv[]) {
           exit(0);
       }
   }
-  for (int i = 0; i < n; i++) {
+  for (i = 0; i < n; i++) {
       wait(NULL);
   }
   exit(0);
