@@ -28,12 +28,19 @@ int main(int argc, char * argv[]){
     for (i = 0; i < nombreProcessus; i++) {
         pid = fork();
 
+        if (pid < 0) {
+          fprintf(stderr, "Erreur de fork\n");
+          exit(EXIT_FAILURE);
+        }
         /* Enfants */
         if (pid == 0) {
 
             /* Premier fils */
             if (i == 0) {
-                /* On ferme les côtés inutiles des tubes */
+                /* On ferme les côtés inutiles des tubes
+                Le premier fils écrit sur le tube 0
+                Il lit le tube nombreProcessus - 1
+                */
                 close(tube[0][READ]);
                 close(tube[nombreProcessus-1][WRITE]);
 
@@ -57,7 +64,10 @@ int main(int argc, char * argv[]){
 
             /* Autres fils */
             else {
-                /* On ferme les côtés inutiles des tubes */
+                /* On ferme les côtés inutiles des tubes
+                Le fils écrit sur le tube i (numéro du processus)
+                Il lit le tube i-1
+                */
                 close(tube[i][READ]);
                 close(tube[i-1][WRITE]);
 
@@ -65,8 +75,8 @@ int main(int argc, char * argv[]){
 
                 while (jeton != -1) {
                     read(tube[i-1][READ], &jeton, sizeof(int));
-                    if (jeton != -1) {
-                        jeton++; // incremente a chaque fils
+                    if (jeton != -1 && jeton < max) {
+                        jeton++; // S'incrémente à chaque fils
                         printf("Ecriture du fils n°%d. Jeton = %d\n", i, jeton);
                     }
                     write(tube[i][WRITE], &jeton, sizeof(int));
