@@ -1,8 +1,9 @@
 CC=gcc
-CFLAGS=
+CFLAGS=-std=c99 -D_POSIX_SOURCE
 LDFLAGS=
 EXEC=election
-OBJ=$(wildcard *.o)
+SRC=$(wildcard *.c)
+OBJ=$(SRC:.c=.o)
 
 all: $(EXEC)
 
